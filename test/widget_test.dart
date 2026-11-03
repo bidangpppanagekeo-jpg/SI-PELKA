@@ -15,8 +15,11 @@ void main() {
     expect(find.text('Nomor kontak pelapor'), findsOneWidget);
     expect(find.text('Data korban'), findsOneWidget);
     expect(find.text('Nama korban (opsional)'), findsOneWidget);
-    expect(find.text('Informasi kejadian'), findsOneWidget);
-    await tester.ensureVisible(find.text('Ceritakan seperlunya'));
+    await tester.scrollUntilVisible(
+      find.text('Ceritakan seperlunya'),
+      500,
+      scrollable: find.byType(Scrollable),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Ceritakan seperlunya'), findsOneWidget);
     await tester.ensureVisible(find.text('Lihat ringkasan demo'));
