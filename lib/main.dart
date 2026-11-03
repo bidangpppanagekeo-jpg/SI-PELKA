@@ -340,7 +340,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                   style: TextStyle(fontWeight: FontWeight.w700)),
               const SizedBox(height: 9),
               DropdownButtonFormField<String>(
-                value: _incidentType,
+                initialValue: _incidentType,
                 decoration: const InputDecoration(hintText: 'Pilih yang sesuai'),
                 items: const [
                   DropdownMenuItem(value: 'Fisik', child: Text('Kekerasan fisik')),
