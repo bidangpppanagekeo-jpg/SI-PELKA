@@ -19,7 +19,10 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('Ceritakan seperlunya'),
       500,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.descendant(
+        of: find.byType(ComplaintPage),
+        matching: find.byType(Scrollable),
+      ),
     );
     await tester.pumpAndSettle();
     expect(find.text('Ceritakan seperlunya'), findsOneWidget);
