@@ -16,17 +16,18 @@ void main() {
     expect(find.text('Nomor kontak pelapor'), findsOneWidget);
     expect(find.text('Data korban'), findsOneWidget);
     expect(find.text('Nama korban (opsional)'), findsOneWidget);
-    await tester.scrollUntilVisible(
+    await tester.dragUntilVisible(
       find.text('Ceritakan seperlunya'),
-      500,
-      scrollable: find.descendant(
-        of: find.byType(ComplaintPage),
-        matching: find.byType(Scrollable),
-      ),
+      find.byType(ListView).last,
+      const Offset(0, -500),
     );
     await tester.pumpAndSettle();
     expect(find.text('Ceritakan seperlunya'), findsOneWidget);
-    await tester.ensureVisible(find.text('Lihat ringkasan demo'));
+    await tester.dragUntilVisible(
+      find.text('Lihat ringkasan demo'),
+      find.byType(ListView).last,
+      const Offset(0, -500),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Aman untuk dihubungi melalui nomor tersebut.'),
         findsOneWidget);
