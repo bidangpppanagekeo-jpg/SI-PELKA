@@ -154,7 +154,7 @@ class HomePage extends StatelessWidget {
             ),
             const SizedBox(height: 18),
             const Text(
-              'MVP demo: pengaduan belum dikirim atau disimpan ke layanan pendamping.',
+              'MVP demo: formulir belum terhubung ke admin dinas. Jangan masukkan data pribadi nyata.',
               style: TextStyle(
                   color: Color(0xFF746A72), fontSize: 12, height: 1.45),
             ),
@@ -294,12 +294,24 @@ class ComplaintPage extends StatefulWidget {
 
 class _ComplaintPageState extends State<ComplaintPage> {
   final _formKey = GlobalKey<FormState>();
+  final _reporterNameController = TextEditingController();
+  final _reporterPhoneController = TextEditingController();
+  final _victimNameController = TextEditingController();
+  final _victimAgeController = TextEditingController();
+  final _districtController = TextEditingController();
   final _storyController = TextEditingController();
   String? _incidentType;
-  bool _confirmed = false;
+  String? _reporterRelationship;
+  bool _safeToContact = false;
+  bool _privacyConsent = false;
 
   @override
   void dispose() {
+    _reporterNameController.dispose();
+    _reporterPhoneController.dispose();
+    _victimNameController.dispose();
+    _victimAgeController.dispose();
+    _districtController.dispose();
     _storyController.dispose();
     super.dispose();
   }
@@ -327,8 +339,9 @@ class _ComplaintPageState extends State<ComplaintPage> {
                     SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'Jangan isi nama lengkap, alamat, atau informasi sensitif lainnya. '
-                        'Data hanya berada di layar ini dan tidak dikirim ke mana pun.',
+                        'Formulir ini belum terhubung ke admin dinas. Data yang diisi hanya '
+                        'berada sementara di layar ini, tidak dikirim atau disimpan. '
+                        'Jangan gunakan data pribadi nyata sampai layanan resmi tersedia.',
                         style: TextStyle(height: 1.45, fontSize: 13),
                       ),
                     ),
@@ -336,12 +349,103 @@ class _ComplaintPageState extends State<ComplaintPage> {
                 ),
               ),
               const SizedBox(height: 23),
-              const Text('Jenis kejadian',
-                  style: TextStyle(fontWeight: FontWeight.w700)),
-              const SizedBox(height: 9),
+              _sectionTitle('Data pelapor'),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: _reporterNameController,
+                textCapitalization: TextCapitalization.words,
+                decoration: const InputDecoration(
+                  labelText: 'Nama pelapor',
+                  hintText: 'Nama yang dapat digunakan admin untuk menyapa',
+                ),
+                validator: _requiredValidator('Masukkan nama pelapor.'),
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                initialValue: _reporterRelationship,
+                decoration: const InputDecoration(
+                  labelText: 'Hubungan dengan korban',
+                  hintText: 'Pilih hubungan',
+                ),
+                items: const [
+                  DropdownMenuItem(value: 'Korban', child: Text('Saya korban')),
+                  DropdownMenuItem(value: 'Keluarga', child: Text('Keluarga')),
+                  DropdownMenuItem(value: 'Saksi', child: Text('Saksi')),
+                  DropdownMenuItem(value: 'Pendamping', child: Text('Pendamping')),
+                  DropdownMenuItem(value: 'Lainnya', child: Text('Lainnya')),
+                ],
+                onChanged: (value) =>
+                    setState(() => _reporterRelationship = value),
+                validator: (value) =>
+                    value == null ? 'Pilih hubungan dengan korban.' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _reporterPhoneController,
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(
+                  labelText: 'Nomor kontak pelapor',
+                  hintText: 'Contoh: 08xxxxxxxxxx',
+                  helperText: 'Gunakan nomor yang aman untuk dihubungi.',
+                ),
+                validator: (value) {
+                  final digits =
+                      (value ?? '').replaceAll(RegExp(r'[^0-9]'), '');
+                  if (digits.length < 9 || digits.length > 15) {
+                    return 'Masukkan nomor kontak yang valid.';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 24),
+              _sectionTitle('Data korban'),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: _victimNameController,
+                textCapitalization: TextCapitalization.words,
+                decoration: const InputDecoration(
+                  labelText: 'Nama korban (opsional)',
+                  helperText:
+                      'Kosongkan jika belum aman atau belum mengetahui nama.',
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _victimAgeController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Usia korban (opsional)',
+                  hintText: 'Perkiraan usia dalam tahun',
+                ),
+                validator: (value) {
+                  final text = value?.trim() ?? '';
+                  if (text.isEmpty) return null;
+                  final age = int.tryParse(text);
+                  if (age == null || age < 0 || age > 120) {
+                    return 'Masukkan usia antara 0 sampai 120 tahun.';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _districtController,
+                textCapitalization: TextCapitalization.words,
+                decoration: const InputDecoration(
+                  labelText: 'Kabupaten/kecamatan kejadian (opsional)',
+                  helperText:
+                      'Jangan tulis alamat rumah lengkap atau lokasi yang membahayakan.',
+                ),
+              ),
+              const SizedBox(height: 24),
+              _sectionTitle('Informasi kejadian'),
+              const SizedBox(height: 10),
               DropdownButtonFormField<String>(
                 initialValue: _incidentType,
-                decoration: const InputDecoration(hintText: 'Pilih yang sesuai'),
+                decoration: const InputDecoration(
+                  labelText: 'Jenis kejadian',
+                  hintText: 'Pilih yang sesuai',
+                ),
                 items: const [
                   DropdownMenuItem(value: 'Fisik', child: Text('Kekerasan fisik')),
                   DropdownMenuItem(
@@ -375,21 +479,28 @@ class _ComplaintPageState extends State<ComplaintPage> {
                     ? 'Ceritakan singkat atau tulis “belum siap”.'
                     : null,
               ),
-              const ListTile(
+              const SizedBox(height: 12),
+              CheckboxListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: Icon(Icons.visibility_off_outlined),
-                title: Text('Pengaduan tanpa identitas',
-                    style: TextStyle(fontWeight: FontWeight.w600)),
-                subtitle: Text('Nama dan nomor kontak tidak diminta.'),
+                controlAffinity: ListTileControlAffinity.leading,
+                value: _safeToContact,
+                onChanged: (value) =>
+                    setState(() => _safeToContact = value ?? false),
+                title: const Text(
+                  'Aman untuk dihubungi melalui nomor tersebut.',
+                  style: TextStyle(fontSize: 13, height: 1.35),
+                ),
               ),
               CheckboxListTile(
                 contentPadding: EdgeInsets.zero,
                 controlAffinity: ListTileControlAffinity.leading,
-                value: _confirmed,
+                value: _privacyConsent,
                 onChanged: (value) =>
-                    setState(() => _confirmed = value ?? false),
+                    setState(() => _privacyConsent = value ?? false),
                 title: const Text(
-                  'Saya memahami ini hanya demo dan laporan tidak diteruskan ke petugas.',
+                  'Saya memahami data kontak digunakan untuk konfirmasi oleh admin dinas '
+                  'setelah layanan resmi tersedia. Saat ini formulir hanya demo dan tidak '
+                  'mengirim data.',
                   style: TextStyle(fontSize: 13, height: 1.35),
                 ),
               ),
@@ -401,7 +512,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                       borderRadius: BorderRadius.circular(15)),
                 ),
                 onPressed: _submit,
-                child: const Text('Lanjutkan'),
+                child: const Text('Lihat ringkasan demo'),
               ),
             ],
           ),
@@ -413,10 +524,10 @@ class _ComplaintPageState extends State<ComplaintPage> {
   void _submit() {
     FocusScope.of(context).unfocus();
     if (!_formKey.currentState!.validate()) return;
-    if (!_confirmed) {
+    if (!_safeToContact || !_privacyConsent) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('Mohon konfirmasi pemahaman sebelum melanjutkan.')),
+            content: Text('Mohon lengkapi persetujuan yang diperlukan.')),
       );
       return;
     }
@@ -428,6 +539,15 @@ class _ComplaintPageState extends State<ComplaintPage> {
         ),
       ),
     );
+  }
+
+  String? Function(String?) _requiredValidator(String message) {
+    return (value) => value == null || value.trim().isEmpty ? message : null;
+  }
+
+  Widget _sectionTitle(String title) {
+    return Text(title,
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700));
   }
 }
 
@@ -458,8 +578,8 @@ class ConfirmationPage extends StatelessWidget {
                   style: TextStyle(fontSize: 23, fontWeight: FontWeight.w800)),
               const SizedBox(height: 12),
               const Text(
-                'Ini baru ringkasan di perangkatmu, bukan pengaduan resmi. '
-                'Tidak ada data yang disimpan atau dikirim.',
+                'Ini hanya ringkasan demo di perangkatmu, bukan pengaduan resmi. '
+                'Admin dinas belum menerima laporan dan tidak dapat menghubungi melalui formulir ini.',
                 textAlign: TextAlign.center,
                 style: TextStyle(height: 1.5, color: Color(0xFF655A62)),
               ),
@@ -473,7 +593,8 @@ class ConfirmationPage extends StatelessWidget {
                     children: [
                       Text('Jenis: $incidentType'),
                       const SizedBox(height: 8),
-                      const Text('Identitas: tidak diminta'),
+                      const Text(
+                          'Data kontak tidak disimpan atau ditampilkan kembali.'),
                     ],
                   ),
                 ),
