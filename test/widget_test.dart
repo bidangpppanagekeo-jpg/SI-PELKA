@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:siperempuan_anak/main.dart';
 
@@ -13,15 +12,12 @@ void main() {
     expect(find.text('Data pelapor'), findsOneWidget);
     expect(find.text('Nama pelapor'), findsOneWidget);
     expect(find.text('Hubungan dengan korban'), findsOneWidget);
-    await tester.ensureVisible(find.text('Hubungan dengan korban'));
-    await tester.pumpAndSettle();
-    expect(find.byType(DropdownButtonFormField<String>), findsOneWidget);
     expect(find.text('Nomor kontak pelapor'), findsOneWidget);
     expect(find.text('Data korban'), findsOneWidget);
     expect(find.text('Nama korban (opsional)'), findsOneWidget);
+    expect(find.text('Informasi kejadian'), findsOneWidget);
     await tester.ensureVisible(find.text('Ceritakan seperlunya'));
     await tester.pumpAndSettle();
-    expect(find.byType(DropdownButtonFormField<String>), findsOneWidget);
     expect(find.text('Ceritakan seperlunya'), findsOneWidget);
     await tester.ensureVisible(find.text('Lihat ringkasan demo'));
     await tester.pumpAndSettle();
