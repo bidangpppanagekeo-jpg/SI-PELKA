@@ -28,7 +28,7 @@ Workflow GitHub Actions di `.github/workflows/deploy-cloudflare-pages.yml` memba
 
 3. Buat Cloudflare API Token dengan izin **Account → Cloudflare Pages → Edit** untuk akun yang benar.
 4. Di repository GitHub, buka **Settings → Secrets and variables → Actions** dan tambahkan repository secrets:
-   - `CLOUDFLARE_API_TOKEN`: API token dari langkah sebelumnya.
+   - `SIPELKA`: API token dari langkah sebelumnya.
    - `CLOUDFLARE_ACCOUNT_ID`: Account ID Cloudflare.
 5. Push perubahan ke `main`, kemudian pantau hasilnya di tab **Actions**. Setelah berhasil, buka domain `*.pages.dev` yang ditampilkan di Cloudflare Pages.
 
@@ -37,8 +37,8 @@ Jangan masukkan token atau Account ID ke source code, dan jangan kirim API token
 ## Cakupan demo
 
 - Beranda dengan informasi keselamatan.
-- Formulir pengaduan anonim dengan kategori kejadian dan cerita singkat.
-- Konfirmasi bahwa laporan tidak diteruskan ke petugas.
-- Data formulir hanya berada di memori selama alur berlangsung; aplikasi ini tidak mengirim atau menyimpan laporan.
+- Formulir demo berisi nama dan nomor kontak pelapor, hubungan dengan korban, data korban opsional, kategori kejadian, dan cerita.
+- Persetujuan kontak balik dan keterangan bahwa data tidak terkirim.
+- Data formulir hanya berada sementara di memori selama alur berlangsung; aplikasi ini tidak mengirim atau menyimpan laporan.
 
-**Jangan gunakan demo ini untuk pengaduan nyata.** Belum ada backend, pemantauan petugas, enkripsi penyimpanan, atau mekanisme penanganan darurat. Sebelum digunakan sungguhan, integrasikan dengan layanan resmi yang berwenang dan lakukan peninjauan keamanan, privasi, aksesibilitas, serta keselamatan pengguna.
+**Jangan gunakan formulir demo ini dengan data pribadi nyata atau untuk pengaduan sungguhan.** Belum ada backend, petugas yang menerima laporan, kebijakan retensi, enkripsi penyimpanan, atau mekanisme penanganan darurat. Sebelum penggunaan resmi, dinas perlu menyiapkan backend terlindungi, akses petugas berbasis peran, audit akses, kebijakan privasi dan retensi, serta prosedur respons dan keselamatan; lakukan peninjauan keamanan dan privasi terlebih dahulu.
