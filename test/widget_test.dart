@@ -62,6 +62,9 @@ void main() {
     );
     expect(find.text('Aman untuk dihubungi melalui nomor tersebut.'),
         findsOneWidget);
-    await expectVisible(find.text('Lihat ringkasan demo'));
+    await expectVisible(
+      find.textContaining('dikirim dan disimpan di Google Sheet milik layanan'),
+    );
+    await expectVisible(find.text('Kirim pengaduan'));
   });
 }

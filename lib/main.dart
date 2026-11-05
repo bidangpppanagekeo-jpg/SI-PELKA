@@ -1,4 +1,8 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 const _plum = Color(0xFF713B62);
 const _rose = Color(0xFFD96F91);
@@ -301,7 +305,7 @@ class HomePage extends StatelessWidget {
                   SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'MVP demo: formulir belum terhubung ke admin dinas. Jangan masukkan data pribadi nyata.',
+                      'Pengaduan tersimpan setelah layanan terhubung. Ini bukan layanan darurat dan tidak menjamin respons segera.',
                       style: TextStyle(
                         color: Color(0xFF426E69),
                         fontSize: 12,
@@ -324,7 +328,8 @@ class HomePage extends StatelessWidget {
       'Utamakan keselamatan',
       'Jika perangkat ini mungkin dipantau, pertimbangkan memakai perangkat orang tepercaya. '
           'Jangan gunakan aplikasi ini bila hal itu dapat meningkatkan risiko. '
-          'MVP ini tidak mengirim laporan dan tidak menjamin kerahasiaan perangkat.',
+          'Aplikasi ini tidak menjamin kerahasiaan perangkat. Pengaduan yang berhasil dikirim '
+          'akan disimpan di Google Sheet layanan.',
     );
   }
 
@@ -551,6 +556,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
   String? _reporterRelationship;
   bool _safeToContact = false;
   bool _privacyConsent = false;
+  bool _isSubmitting = false;
 
   @override
   void dispose() {
@@ -607,9 +613,9 @@ class _ComplaintPageState extends State<ComplaintPage> {
                     SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'Formulir ini belum terhubung ke admin dinas. Data yang diisi hanya '
-                        'berada sementara di layar ini, tidak dikirim atau disimpan. '
-                        'Jangan gunakan data pribadi nyata sampai layanan resmi tersedia.',
+                        'Saat dikirim, data akan diteruskan melalui internet dan disimpan '
+                        'di Google Sheet layanan untuk ditinjau petugas berwenang. '
+                        'Kirim hanya jika perangkat aman dan kamu menyetujui penyimpanan ini.',
                         style: TextStyle(
                           color: Color(0xFF755746),
                           height: 1.45,
@@ -930,9 +936,9 @@ class _ComplaintPageState extends State<ComplaintPage> {
                 onChanged: (value) =>
                     setState(() => _privacyConsent = value ?? false),
                 title: const Text(
-                  'Saya memahami data kontak digunakan untuk konfirmasi oleh admin dinas '
-                  'setelah layanan resmi tersedia. Saat ini formulir hanya demo dan tidak '
-                  'mengirim data.',
+                  'Saya setuju data pengaduan ini, termasuk data pribadi dan kronologi, '
+                  'dikirim dan disimpan di Google Sheet milik layanan agar dapat ditinjau '
+                  'petugas berwenang.',
                   style: TextStyle(fontSize: 13, height: 1.35),
                 ),
               ),
@@ -943,13 +949,23 @@ class _ComplaintPageState extends State<ComplaintPage> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15)),
                 ),
-                onPressed: _submit,
-                child: const Row(
+                onPressed: _isSubmitting ? null : _submit,
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Lihat ringkasan demo'),
-                    SizedBox(width: 9),
-                    Icon(Icons.arrow_forward_rounded, size: 19),
+                    Text(_isSubmitting ? 'Mengirim...' : 'Kirim pengaduan'),
+                    const SizedBox(width: 9),
+                    if (_isSubmitting)
+                      const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    else
+                      const Icon(Icons.send_rounded, size: 18),
                   ],
                 ),
               ),
@@ -960,7 +976,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
     );
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     FocusScope.of(context).unfocus();
     if (!_formKey.currentState!.validate()) return;
     if (!_safeToContact || !_privacyConsent) {
@@ -971,12 +987,77 @@ class _ComplaintPageState extends State<ComplaintPage> {
       return;
     }
 
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => ConfirmationPage(
-          incidentType: _incidentType!,
+    setState(() => _isSubmitting = true);
+    try {
+      final response = await http
+          .post(
+            Uri.base.resolve('/api/complaints'),
+            headers: const {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'reporterName': _reporterNameController.text.trim(),
+              'reporterRelationship': _reporterRelationship,
+              'reporterPhone': _reporterPhoneController.text.trim(),
+              'victimName': _victimNameController.text.trim(),
+              'victimAge': int.tryParse(_victimAgeController.text.trim()),
+              'victimDistrict': _victimDistrictController.text.trim(),
+              'victimSubdistrict': _victimSubdistrictController.text.trim(),
+              'victimVillage': _victimVillageController.text.trim(),
+              'perpetratorNameStatus': _perpetratorNameStatus,
+              'perpetratorName': _perpetratorNameController.text.trim(),
+              'perpetratorAge':
+                  int.tryParse(_perpetratorAgeController.text.trim()),
+              'perpetratorAddress': _perpetratorAddressController.text.trim(),
+              'perpetratorRelationship': _perpetratorRelationship,
+              'incidentType': _incidentType,
+              'story': _storyController.text.trim(),
+              'safeToContact': _safeToContact,
+              'privacyConsent': _privacyConsent,
+            }),
+          )
+          .timeout(const Duration(seconds: 25));
+      final responseBody = jsonDecode(response.body);
+      if (response.statusCode != 201 ||
+          responseBody is! Map<String, dynamic> ||
+          responseBody['saved'] != true) {
+        final message =
+            responseBody is Map<String, dynamic> ? responseBody['error'] : null;
+        throw _SubmissionException(
+          message is String
+              ? message
+              : 'Pengaduan belum tersimpan. Silakan coba lagi nanti.',
+        );
+      }
+
+      if (!mounted) return;
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => ConfirmationPage(incidentType: _incidentType!),
         ),
-      ),
+      );
+    } on _SubmissionException catch (error) {
+      _showSubmissionError(error.message);
+    } on http.ClientException {
+      _showSubmissionError(
+        'Status pengiriman belum dapat dipastikan. Jika masalah berlanjut, '
+        'hubungi petugas layanan sebelum mengirim ulang.',
+      );
+    } on TimeoutException {
+      _showSubmissionError(
+        'Status pengiriman belum dapat dipastikan. Karena layanan terlalu lama '
+        'merespons, hubungi petugas sebelum mengirim ulang.',
+      );
+    } on FormatException {
+      _showSubmissionError(
+        'Respons layanan tidak valid. Pengaduan belum dapat dipastikan tersimpan.',
+      );
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
+  }
+
+  void _showSubmissionError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
     );
   }
 
@@ -1068,6 +1149,12 @@ class _ComplaintPageState extends State<ComplaintPage> {
   }
 }
 
+class _SubmissionException implements Exception {
+  const _SubmissionException(this.message);
+
+  final String message;
+}
+
 class ConfirmationPage extends StatelessWidget {
   const ConfirmationPage({
     required this.incidentType,
@@ -1095,8 +1182,8 @@ class ConfirmationPage extends StatelessWidget {
                   style: TextStyle(fontSize: 23, fontWeight: FontWeight.w800)),
               const SizedBox(height: 12),
               const Text(
-                'Ini hanya ringkasan demo di perangkatmu, bukan pengaduan resmi. '
-                'Admin dinas belum menerima laporan dan tidak dapat menghubungi melalui formulir ini.',
+                'Pengaduan sudah tersimpan di Google Sheet layanan untuk ditinjau petugas '
+                'berwenang. Penyimpanan ini belum menjamin tindak lanjut atau respons darurat.',
                 textAlign: TextAlign.center,
                 style: TextStyle(height: 1.5, color: Color(0xFF655A62)),
               ),
@@ -1111,7 +1198,8 @@ class ConfirmationPage extends StatelessWidget {
                       Text('Jenis: $incidentType'),
                       const SizedBox(height: 8),
                       const Text(
-                          'Data kontak tidak disimpan atau ditampilkan kembali.'),
+                        'Data pribadi tidak ditampilkan kembali di halaman ini.',
+                      ),
                     ],
                   ),
                 ),

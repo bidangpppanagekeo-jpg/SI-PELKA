@@ -34,11 +34,29 @@ Workflow GitHub Actions di `.github/workflows/deploy-cloudflare-pages.yml` memba
 
 Jangan masukkan token atau Account ID ke source code, dan jangan kirim API token melalui chat. Deploy dari branch selain `main` akan menjadi preview deployment.
 
-## Cakupan demo
+## Cakupan aplikasi
 
 - Beranda dengan informasi keselamatan.
-- Formulir demo mewajibkan seluruh data pelapor dan korban (termasuk alamat kabupaten/kecamatan/desa atau kelurahan), serta berisi data pelaku, jenis kejadian, dan kronologi.
-- Persetujuan kontak balik dan keterangan bahwa data tidak terkirim.
-- Data formulir hanya berada sementara di memori selama alur berlangsung; aplikasi ini tidak mengirim atau menyimpan laporan.
+- Formulir mewajibkan seluruh data pelapor dan korban (termasuk alamat kabupaten/kecamatan/desa atau kelurahan), serta berisi data pelaku, jenis kejadian, dan kronologi.
+- Pengiriman pengaduan dilakukan melalui Cloudflare Pages Function dan Google Sheets API. Kredensial Google disimpan sebagai Cloudflare Pages secret dan tidak dikirim ke browser.
+- Sebelum mengirim, pelapor harus menyatakan laporan aman dikirim dan memberi persetujuan eksplisit untuk menyimpan data di Google Sheet.
 
-**Jangan gunakan formulir demo ini dengan data pribadi nyata atau untuk pengaduan sungguhan.** Belum ada backend, petugas yang menerima laporan, kebijakan retensi, enkripsi penyimpanan, atau mekanisme penanganan darurat. Sebelum penggunaan resmi, dinas perlu menyiapkan backend terlindungi, akses petugas berbasis peran, audit akses, kebijakan privasi dan retensi, serta prosedur respons dan keselamatan; lakukan peninjauan keamanan dan privasi terlebih dahulu.
+## Mengaktifkan penyimpanan Google Sheets
+
+Endpoint gagal secara aman dan tidak menyimpan laporan sampai konfigurasi berikut selesai:
+
+1. Di Google Cloud, aktifkan **Google Sheets API**, buat service account khusus, lalu buat key JSON. Jangan commit atau kirim key ini lewat chat.
+2. Bagikan spreadsheet privat kepada email service account dengan izin **Editor**. Jangan ubah akses sheet menjadi publik.
+3. Pada tab `Sheet1`, buat baris judul dengan urutan kolom berikut:
+
+   `Waktu UTC`, `Nama pelapor`, `Hubungan pelapor-korban`, `Nomor kontak`, `Nama korban`, `Usia korban`, `Kabupaten`, `Kecamatan`, `Desa/kelurahan`, `Status nama pelaku`, `Nama pelaku`, `Usia pelaku`, `Alamat pelaku`, `Hubungan pelaku-korban`, `Jenis kejadian`, `Kronologi`, `Aman dihubungi`, `Persetujuan penyimpanan`.
+
+4. Di pengaturan Cloudflare Pages proyek **ruang-aman-perempuan-anak**, tambahkan production environment variables:
+   - `ALLOWED_ORIGIN`: `https://ruang-aman-perempuan-anak.pages.dev`
+   - `GOOGLE_SHEETS_SPREADSHEET_ID`: ID dari URL spreadsheet.
+   - `GOOGLE_SHEETS_TAB`: `Sheet1`
+5. Tambahkan `GOOGLE_SERVICE_ACCOUNT_JSON` sebagai **secret** Pages menggunakan isi key JSON service account. Jangan letakkan key di source code, GitHub, atau variabel yang terekspos ke browser. Jika key pernah terekspos, cabut dan rotasi segera.
+6. Setelah secret dan variabel aktif, lakukan deployment ulang. Uji hanya dengan data fiktif, lalu pastikan satu baris uji muncul dan akses spreadsheet hanya diberikan kepada petugas berwenang.
+7. Tambahkan Cloudflare rate-limiting rule untuk `/api/complaints` (misalnya maksimal 5 permintaan per alamat IP dalam 10 menit) dan pantau penyalahgunaan sebelum membuka formulir kepada publik.
+
+Sheet berisi data sensitif: batasi akses, tetapkan penanggung jawab serta kebijakan retensi/penghapusan, dan jangan gunakan data laporan sungguhan sebelum organisasi menyetujui kebijakan privasi, keamanan, dan alur respons. Persetujuan pada formulir menjelaskan pengiriman ke Google Sheet, tetapi tidak menggantikan persetujuan/kebijakan organisasi atau menjamin tindak lanjut dan bantuan darurat. Endpoint hanya menerima permintaan dari origin Pages yang dikonfigurasi dan memvalidasi data; pemeriksaan origin bukan bukti identitas pelapor. Jangan aktifkan penerimaan data nyata sebelum konfigurasi, rate limiting, dan proses penanganan laporan siap.
