@@ -350,6 +350,142 @@ class HomePage extends StatelessWidget {
   }
 }
 
+class _FormFillingGuide extends StatelessWidget {
+  const _FormFillingGuide();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEAF5F2),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFFD8EBE6)),
+      ),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.menu_book_rounded, color: _teal, size: 21),
+              SizedBox(width: 9),
+              Text(
+                'Panduan mengisi formulir',
+                style: TextStyle(
+                  color: _ink,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 13),
+          _FormGuideStep(
+            number: '1',
+            title: 'Data pelapor',
+            detail:
+                'Isi nama, hubungan dengan korban, dan nomor yang aman dihubungi.',
+          ),
+          _FormGuideStep(
+            number: '2',
+            title: 'Data korban',
+            detail:
+                'Lengkapi nama, usia, kabupaten, kecamatan, serta desa/kelurahan. Jika kamu korban, pilih “Saya korban” pada hubungan pelapor.',
+          ),
+          _FormGuideStep(
+            number: '3',
+            title: 'Data pelaku',
+            detail:
+                'Isi jika informasinya diketahui dan aman dibagikan. Jika belum diketahui, pilih “Tidak diketahui”; rincian lainnya boleh dikosongkan.',
+          ),
+          _FormGuideStep(
+            number: '4',
+            title: 'Informasi kejadian',
+            detail:
+                'Pilih jenis kejadian, lalu ceritakan seperlunya secara berurutan. Sampaikan yang kamu ketahui; tidak perlu menebak atau menulis detail yang belum aman dibagikan.',
+          ),
+          SizedBox(height: 10),
+          Text(
+            'Sebelum mengirim, pastikan perangkat dan nomor kontak aman. Persetujuan berarti data akan disimpan di Google Sheet layanan.',
+            style: TextStyle(
+              color: Color(0xFF426E69),
+              fontSize: 12,
+              height: 1.45,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FormGuideStep extends StatelessWidget {
+  const _FormGuideStep({
+    required this.number,
+    required this.title,
+    required this.detail,
+  });
+
+  final String number;
+  final String title;
+  final String detail;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 11),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 23,
+            height: 23,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              number,
+              style: const TextStyle(
+                color: _teal,
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+          const SizedBox(width: 9),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: _ink,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  detail,
+                  style: const TextStyle(
+                    color: _mutedInk,
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _HeroBadge extends StatelessWidget {
   const _HeroBadge();
 
@@ -636,6 +772,8 @@ class _ComplaintPageState extends State<ComplaintPage> {
                   ],
                 ),
               ),
+              const SizedBox(height: 16),
+              const _FormFillingGuide(),
               const SizedBox(height: 23),
               Container(
                 padding: const EdgeInsets.all(16),

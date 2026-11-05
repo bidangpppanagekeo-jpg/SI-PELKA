@@ -12,7 +12,14 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.textContaining('Aplikasi ini saat ini hanya untuk uji coba terbatas'),
+      find.textContaining(
+          'Aplikasi ini saat ini hanya untuk uji coba terbatas'),
+      findsOneWidget,
+    );
+    expect(find.text('Panduan mengisi formulir'), findsOneWidget);
+    expect(find.text('Informasi kejadian'), findsOneWidget);
+    expect(
+      find.textContaining('tidak perlu menebak atau menulis detail'),
       findsOneWidget,
     );
     final list = find.byType(ListView).last;
@@ -28,7 +35,7 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    expect(find.text('Data pelapor'), findsOneWidget);
+    await expectVisible(find.text('Data pelapor'));
     await expectVisible(find.text('FORMULIR PENGADUAN'));
     expect(find.text('Nama pelapor (wajib)'), findsOneWidget);
     expect(find.text('Hubungan dengan korban (wajib)'), findsOneWidget);
