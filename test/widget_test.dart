@@ -11,6 +11,10 @@ void main() {
     await tester.tap(find.text('Buat pengaduan'));
     await tester.pumpAndSettle();
 
+    expect(
+      find.textContaining('Aplikasi ini saat ini hanya untuk uji coba terbatas'),
+      findsOneWidget,
+    );
     final list = find.byType(ListView).last;
     Future<void> expectVisible(Finder target) async {
       var attempts = 0;
@@ -63,7 +67,11 @@ void main() {
     expect(find.text('Aman untuk dihubungi melalui nomor tersebut.'),
         findsOneWidget);
     await expectVisible(
-      find.textContaining('dikirim dan disimpan di Google Sheet milik layanan'),
+      find.textContaining(
+          'dikirim dan disimpan di Google Sheet yang dikelola Bidang PPPA'),
+    );
+    await expectVisible(
+      find.textContaining('Data disimpan paling lama 3 bulan'),
     );
     await expectVisible(find.text('Kirim pengaduan'));
   });

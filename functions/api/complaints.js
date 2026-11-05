@@ -179,6 +179,13 @@ export async function onRequestPost({ request, env }) {
   if (!env.ALLOWED_ORIGIN || origin !== env.ALLOWED_ORIGIN) {
     return jsonResponse({ error: 'Asal permintaan tidak diizinkan.' }, 403);
   }
+  if (env.COMPLAINT_INTAKE_ENABLED !== 'true') {
+    return jsonResponse(
+      { error: 'Penerimaan pengaduan belum dibuka. Hubungi petugas layanan.' },
+      503,
+      origin,
+    );
+  }
   if (!request.headers.get('Content-Type')?.startsWith('application/json')) {
     return jsonResponse({ error: 'Format permintaan tidak didukung.' }, 415, origin);
   }

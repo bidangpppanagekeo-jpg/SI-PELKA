@@ -1,6 +1,6 @@
 # Ruang Aman — Perempuan & Anak
 
-MVP Flutter berbahasa Indonesia untuk prototipe informasi dan alur pengaduan.
+Aplikasi Flutter berbahasa Indonesia untuk informasi dan alur pengaduan perempuan dan anak.
 
 ## Menjalankan
 
@@ -40,6 +40,8 @@ Jangan masukkan token atau Account ID ke source code, dan jangan kirim API token
 - Formulir mewajibkan seluruh data pelapor dan korban (termasuk alamat kabupaten/kecamatan/desa atau kelurahan), serta berisi data pelaku, jenis kejadian, dan kronologi.
 - Pengiriman pengaduan dilakukan melalui Cloudflare Pages Function dan Google Sheets API. Kredensial Google disimpan sebagai Cloudflare Pages secret dan tidak dikirim ke browser.
 - Sebelum mengirim, pelapor harus menyatakan laporan aman dikirim dan memberi persetujuan eksplisit untuk menyimpan data di Google Sheet.
+- Penanggung jawab data: Bidang PPPA, Dinas PMDP3A Kabupaten Nagekeo. Kebijakan instansi menetapkan masa simpan paling lama 3 bulan; petugas pengelola harus menghapus data sesuai masa retensi.
+- Cakupan yang disetujui saat ini adalah uji coba terbatas untuk petugas, bukan penerimaan laporan publik.
 
 ## Mengaktifkan penyimpanan Google Sheets
 
@@ -56,7 +58,9 @@ Endpoint gagal secara aman dan tidak menyimpan laporan sampai konfigurasi beriku
    - `GOOGLE_SHEETS_SPREADSHEET_ID`: ID dari URL spreadsheet.
    - `GOOGLE_SHEETS_TAB`: `Sheet1`
 5. Tambahkan `GOOGLE_SERVICE_ACCOUNT_JSON` sebagai **secret** Pages menggunakan isi key JSON service account. Jangan letakkan key di source code, GitHub, atau variabel yang terekspos ke browser. Jika key pernah terekspos, cabut dan rotasi segera.
-6. Setelah secret dan variabel aktif, lakukan deployment ulang. Uji hanya dengan data fiktif, lalu pastikan satu baris uji muncul dan akses spreadsheet hanya diberikan kepada petugas berwenang.
-7. Tambahkan Cloudflare rate-limiting rule untuk `/api/complaints` (misalnya maksimal 5 permintaan per alamat IP dalam 10 menit) dan pantau penyalahgunaan sebelum membuka formulir kepada publik.
+6. Deploy dalam keadaan intake tertutup. Tanpa production variable `COMPLAINT_INTAKE_ENABLED=true`, endpoint menolak penyimpanan dengan HTTP 503. Jangan mengaktifkannya dulu.
+7. Lindungi hostname produksi `ruang-aman-perempuan-anak.pages.dev` dengan Cloudflare Access dan kebijakan allowlist akun kerja petugas. Kebijakan Pages bawaan dapat hanya melindungi preview; pastikan hostname produksi juga dilindungi. Uji dari browser tanpa login bahwa aplikasi tidak dapat diakses. Pemeriksaan `Origin` di Function bukan autentikasi.
+8. Setelah Access pada hostname produksi terverifikasi, set `COMPLAINT_INTAKE_ENABLED` ke `true`. Uji dengan akun petugas dan data fiktif saja, pastikan satu baris masuk, lalu hapus baris uji tanpa mengubah header. Pastikan akses spreadsheet hanya diberikan kepada petugas berwenang.
+9. Tetapkan SOP respons dan jadwal penghapusan. Retensi 3 bulan belum diotomatisasi oleh aplikasi; petugas pengelola harus memastikan baris dihapus sesuai kebijakan, termasuk dari salinan/backup yang berlaku. Terapkan rate limiting sebelum membuka intake publik.
 
-Sheet berisi data sensitif: batasi akses, tetapkan penanggung jawab serta kebijakan retensi/penghapusan, dan jangan gunakan data laporan sungguhan sebelum organisasi menyetujui kebijakan privasi, keamanan, dan alur respons. Persetujuan pada formulir menjelaskan pengiriman ke Google Sheet, tetapi tidak menggantikan persetujuan/kebijakan organisasi atau menjamin tindak lanjut dan bantuan darurat. Endpoint hanya menerima permintaan dari origin Pages yang dikonfigurasi dan memvalidasi data; pemeriksaan origin bukan bukti identitas pelapor. Jangan aktifkan penerimaan data nyata sebelum konfigurasi, rate limiting, dan proses penanganan laporan siap.
+Sheet berisi data sangat sensitif: tetap batasi akses, tinjau akses petugas berkala, dan jangan gunakan data laporan sungguhan selama uji coba. Persetujuan pada formulir tidak menggantikan persetujuan/kebijakan organisasi, tidak menjamin tindak lanjut, dan bukan bantuan darurat. Jangan membuka intake publik sebelum organisasi menyetujui kebijakan privasi, retensi/penghapusan, kontrol akses, rate limiting, dan proses penanganan laporan.

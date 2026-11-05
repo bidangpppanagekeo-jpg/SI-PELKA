@@ -305,7 +305,9 @@ class HomePage extends StatelessWidget {
                   SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Pengaduan tersimpan setelah layanan terhubung. Ini bukan layanan darurat dan tidak menjamin respons segera.',
+                      'Aplikasi ini sedang diuji secara terbatas oleh petugas dan belum '
+                      'dibuka untuk penerimaan laporan publik. Ini bukan layanan darurat '
+                      'dan tidak menjamin respons segera.',
                       style: TextStyle(
                         color: Color(0xFF426E69),
                         fontSize: 12,
@@ -329,7 +331,10 @@ class HomePage extends StatelessWidget {
       'Jika perangkat ini mungkin dipantau, pertimbangkan memakai perangkat orang tepercaya. '
           'Jangan gunakan aplikasi ini bila hal itu dapat meningkatkan risiko. '
           'Aplikasi ini tidak menjamin kerahasiaan perangkat. Pengaduan yang berhasil dikirim '
-          'akan disimpan di Google Sheet layanan.',
+          'akan disimpan di Google Sheet yang dikelola Bidang PPPA, Dinas PMDP3A Kabupaten '
+          'Nagekeo, dan hanya dapat diakses petugas berwenang. Kebijakan instansi menetapkan '
+          'masa simpan paling lama 3 bulan; petugas pengelola bertanggung jawab menghapus '
+          'data sesuai masa retensi. Layanan ini bukan layanan darurat.',
     );
   }
 
@@ -613,9 +618,14 @@ class _ComplaintPageState extends State<ComplaintPage> {
                     SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'Saat dikirim, data akan diteruskan melalui internet dan disimpan '
-                        'di Google Sheet layanan untuk ditinjau petugas berwenang. '
-                        'Kirim hanya jika perangkat aman dan kamu menyetujui penyimpanan ini.',
+                        'Aplikasi ini saat ini hanya untuk uji coba terbatas petugas, bukan '
+                        'penerimaan laporan publik. Saat dikirim, data akan diteruskan '
+                        'melalui internet dan disimpan '
+                        'di Google Sheet yang dikelola Bidang PPPA, Dinas PMDP3A Kabupaten '
+                        'Nagekeo, untuk ditinjau petugas berwenang. Kebijakan instansi '
+                        'menetapkan masa simpan paling lama 3 bulan; penghapusan dilakukan '
+                        'petugas pengelola. Layanan ini bukan layanan darurat. Kirim hanya '
+                        'jika perangkat aman dan kamu menyetujui penyimpanan ini.',
                         style: TextStyle(
                           color: Color(0xFF755746),
                           height: 1.45,
@@ -937,8 +947,10 @@ class _ComplaintPageState extends State<ComplaintPage> {
                     setState(() => _privacyConsent = value ?? false),
                 title: const Text(
                   'Saya setuju data pengaduan ini, termasuk data pribadi dan kronologi, '
-                  'dikirim dan disimpan di Google Sheet milik layanan agar dapat ditinjau '
-                  'petugas berwenang.',
+                  'dikirim dan disimpan di Google Sheet yang dikelola Bidang PPPA, Dinas '
+                  'PMDP3A Kabupaten Nagekeo agar dapat ditinjau petugas berwenang. Data '
+                  'disimpan paling lama 3 bulan sesuai kebijakan instansi dan dihapus oleh '
+                  'petugas pengelola.',
                   style: TextStyle(fontSize: 13, height: 1.35),
                 ),
               ),
@@ -1182,8 +1194,10 @@ class ConfirmationPage extends StatelessWidget {
                   style: TextStyle(fontSize: 23, fontWeight: FontWeight.w800)),
               const SizedBox(height: 12),
               const Text(
-                'Pengaduan sudah tersimpan di Google Sheet layanan untuk ditinjau petugas '
-                'berwenang. Penyimpanan ini belum menjamin tindak lanjut atau respons darurat.',
+                'Pengaduan sudah tersimpan di Google Sheet Bidang PPPA, Dinas PMDP3A '
+                'Kabupaten Nagekeo untuk ditinjau petugas berwenang. Data disimpan paling '
+                'lama 3 bulan sesuai kebijakan instansi dan dihapus oleh petugas pengelola. '
+                'Penyimpanan ini belum menjamin tindak lanjut atau respons darurat.',
                 textAlign: TextAlign.center,
                 style: TextStyle(height: 1.5, color: Color(0xFF655A62)),
               ),
