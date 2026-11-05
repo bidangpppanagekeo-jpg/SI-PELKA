@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 
+const _plum = Color(0xFF713B62);
+const _rose = Color(0xFFD96F91);
+const _coral = Color(0xFFF08A72);
+const _teal = Color(0xFF398D83);
+const _ink = Color(0xFF312735);
+const _mutedInk = Color(0xFF756A76);
+const _canvas = Color(0xFFFFF8F5);
+
 void main() {
   runApp(const SiperempuanAnakApp());
 }
@@ -9,28 +17,70 @@ class SiperempuanAnakApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const plum = Color(0xFF713B62);
     return MaterialApp(
       title: 'Ruang Aman',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: plum,
-          primary: plum,
-          surface: const Color(0xFFFFFBF8),
+          seedColor: _plum,
+          primary: _plum,
+          secondary: _rose,
+          tertiary: _teal,
+          surface: _canvas,
         ),
-        scaffoldBackgroundColor: const Color(0xFFFFFBF8),
+        scaffoldBackgroundColor: _canvas,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: _canvas,
+          foregroundColor: _ink,
+          surfaceTintColor: Colors.transparent,
+          centerTitle: false,
+          titleTextStyle: TextStyle(
+            color: _ink,
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        cardTheme: CardThemeData(
+          color: Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(22),
+            side: const BorderSide(color: Color(0xFFF0E5EA)),
+          ),
+          margin: EdgeInsets.zero,
+        ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: Colors.white,
+          fillColor: const Color(0xFFFFFEFD),
+          labelStyle: const TextStyle(
+            color: _mutedInk,
+            fontWeight: FontWeight.w600,
+          ),
+          hintStyle: const TextStyle(color: Color(0xFFAA9EA6)),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(color: Color(0xFFE7DDE4)),
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: Color(0xFFEBDDE4)),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(color: Color(0xFFE7DDE4)),
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: Color(0xFFEBDDE4)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: _rose, width: 1.8),
+          ),
+        ),
+        filledButtonTheme: FilledButtonThemeData(
+          style: FilledButton.styleFrom(
+            backgroundColor: _plum,
+            foregroundColor: Colors.white,
+            textStyle: const TextStyle(fontWeight: FontWeight.w700),
+            elevation: 0,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(17)),
           ),
         ),
       ),
@@ -47,19 +97,30 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(22, 18, 22, 28),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 30),
           children: [
             Row(
               children: [
                 Container(
-                  width: 44,
-                  height: 44,
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFF2E5EF),
-                    borderRadius: BorderRadius.circular(15),
+                    gradient: const LinearGradient(
+                      colors: [_plum, _rose],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(17),
+                    boxShadow: [
+                      BoxShadow(
+                        color: _plum.withValues(alpha: 0.18),
+                        blurRadius: 16,
+                        offset: const Offset(0, 7),
+                      ),
+                    ],
                   ),
                   child: const Icon(Icons.favorite_rounded,
-                      color: Color(0xFF713B62)),
+                      color: Colors.white, size: 23),
                 ),
                 const SizedBox(width: 12),
                 const Column(
@@ -70,58 +131,100 @@ class HomePage extends StatelessWidget {
                             fontSize: 11,
                             letterSpacing: 1.5,
                             fontWeight: FontWeight.w800,
-                            color: Color(0xFF713B62))),
+                            color: _plum)),
                     Text('Perempuan & Anak',
                         style: TextStyle(
-                            fontSize: 17, fontWeight: FontWeight.w700)),
+                            fontSize: 17,
+                            color: _ink,
+                            fontWeight: FontWeight.w800)),
                   ],
                 ),
                 const Spacer(),
-                IconButton(
-                  tooltip: 'Informasi keamanan',
-                  onPressed: () => _showSafety(context),
-                  icon: const Icon(Icons.shield_outlined),
+                Material(
+                  color: const Color(0xFFEAF5F2),
+                  borderRadius: BorderRadius.circular(15),
+                  child: IconButton(
+                    tooltip: 'Informasi keamanan',
+                    onPressed: () => _showSafety(context),
+                    icon: const Icon(Icons.shield_outlined, color: _teal),
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 27),
-            Container(
-              padding: const EdgeInsets.all(22),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF713B62), Color(0xFF985F83)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(26),
-              ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            const SizedBox(height: 24),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Stack(
                 children: [
-                  Icon(Icons.waving_hand_rounded,
-                      color: Color(0xFFFFDF9E), size: 28),
-                  SizedBox(height: 16),
-                  Text('Kamu tidak sendiri.',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 25,
-                          height: 1.2,
-                          fontWeight: FontWeight.w800)),
-                  SizedBox(height: 9),
-                  Text(
-                    'Kamu berhak merasa aman dan didengarkan. Cari bantuan sesuai kebutuhanmu.',
-                    style: TextStyle(
-                        color: Color(0xFFF8EAF3), fontSize: 14, height: 1.5),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.fromLTRB(23, 24, 23, 25),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [_plum, Color(0xFF9D547D), _rose],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    child: const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _HeroBadge(),
+                        SizedBox(height: 18),
+                        Text(
+                          'Kamu tidak sendiri.',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 27,
+                            height: 1.15,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          'Kamu berhak merasa aman dan didengarkan. Cari bantuan sesuai kebutuhanmu.',
+                          style: TextStyle(
+                            color: Color(0xFFFFF1F6),
+                            fontSize: 14,
+                            height: 1.55,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    right: -26,
+                    top: -34,
+                    child: _HeroOrb(
+                      size: 130,
+                      color: Colors.white.withValues(alpha: 0.08),
+                    ),
+                  ),
+                  Positioned(
+                    right: 45,
+                    bottom: -64,
+                    child: _HeroOrb(
+                      size: 120,
+                      color: const Color(0xFFFFD6B8).withValues(alpha: 0.14),
+                    ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 25),
-            const Text('Apa yang kamu butuhkan?',
-                style: TextStyle(fontSize: 19, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 27),
+            const Text(
+              'Apa yang kamu butuhkan?',
+              style: TextStyle(
+                fontSize: 19,
+                color: _ink,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
             const SizedBox(height: 13),
             _ActionCard(
               icon: Icons.edit_note_rounded,
+              iconColor: _plum,
+              iconBackground: const Color(0xFFF7E9F1),
               title: 'Buat pengaduan',
               subtitle: 'Ceritakan kejadian dengan cara yang terasa aman.',
               onTap: () => Navigator.of(context).push(
@@ -131,32 +234,83 @@ class HomePage extends StatelessWidget {
             const SizedBox(height: 11),
             _ActionCard(
               icon: Icons.health_and_safety_outlined,
+              iconColor: _teal,
+              iconBackground: const Color(0xFFE8F4F1),
               title: 'Butuh bantuan segera?',
               subtitle:
                   'Jika dalam bahaya, cari tempat aman dan hubungi bantuan.',
               onTap: () => _showEmergency(context),
             ),
             const SizedBox(height: 25),
-            const Text('Langkah kecil, tetap kendalimu',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-            const SizedBox(height: 13),
-            const _TipRow(
-              number: '1',
-              text: 'Gunakan perangkat yang aman dan tidak dipantau.',
-            ),
-            const _TipRow(
-              number: '2',
-              text: 'Kamu boleh berhenti kapan saja saat mengisi cerita.',
-            ),
-            const _TipRow(
-              number: '3',
-              text: 'Jangan sertakan detail yang membuatmu merasa tidak aman.',
+            Container(
+              padding: const EdgeInsets.all(18),
+              decoration: const BoxDecoration(
+                color: Color(0xFFFFF0E7),
+                borderRadius: BorderRadius.all(Radius.circular(23)),
+                border: Border.fromBorderSide(
+                  BorderSide(color: Color(0xFFF9E0D2)),
+                ),
+              ),
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.spa_rounded, color: _coral, size: 21),
+                      SizedBox(width: 9),
+                      Expanded(
+                        child: Text(
+                          'Langkah kecil, tetap kendalimu',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: _ink,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 16),
+                  _TipRow(
+                    number: '1',
+                    text: 'Gunakan perangkat yang aman dan tidak dipantau.',
+                  ),
+                  _TipRow(
+                    number: '2',
+                    text: 'Kamu boleh berhenti kapan saja saat mengisi cerita.',
+                  ),
+                  _TipRow(
+                    number: '3',
+                    text:
+                        'Jangan sertakan detail yang membuatmu merasa tidak aman.',
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 18),
-            const Text(
-              'MVP demo: formulir belum terhubung ke admin dinas. Jangan masukkan data pribadi nyata.',
-              style: TextStyle(
-                  color: Color(0xFF746A72), fontSize: 12, height: 1.45),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEAF5F2),
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: const Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.info_outline_rounded, color: _teal, size: 19),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'MVP demo: formulir belum terhubung ke admin dinas. Jangan masukkan data pribadi nyata.',
+                      style: TextStyle(
+                        color: Color(0xFF426E69),
+                        fontSize: 12,
+                        height: 1.45,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -186,15 +340,67 @@ class HomePage extends StatelessWidget {
   }
 }
 
+class _HeroBadge extends StatelessWidget {
+  const _HeroBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
+      ),
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.waving_hand_rounded, color: Color(0xFFFFDDA5), size: 17),
+          SizedBox(width: 7),
+          Text(
+            'RUANG UNTUK BERCERITA',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 10,
+              letterSpacing: 1,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HeroOrb extends StatelessWidget {
+  const _HeroOrb({required this.size, required this.color});
+
+  final double size;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+    );
+  }
+}
+
 class _ActionCard extends StatelessWidget {
   const _ActionCard({
     required this.icon,
+    required this.iconColor,
+    required this.iconBackground,
     required this.title,
     required this.subtitle,
     required this.onTap,
   });
 
   final IconData icon;
+  final Color iconColor;
+  final Color iconBackground;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
@@ -203,42 +409,65 @@ class _ActionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.white,
-      borderRadius: BorderRadius.circular(18),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
-        child: Padding(
-          padding: const EdgeInsets.all(17),
-          child: Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF5EAF2),
-                  borderRadius: BorderRadius.circular(15),
+      borderRadius: BorderRadius.circular(21),
+      child: Ink(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(21),
+          border: Border.all(color: const Color(0xFFF0E5EA)),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x0C713B62),
+              blurRadius: 16,
+              offset: Offset(0, 6),
+            ),
+          ],
+        ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(21),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: iconBackground,
+                    borderRadius: BorderRadius.circular(17),
+                  ),
+                  child: Icon(icon, color: iconColor, size: 27),
                 ),
-                child: Icon(icon, color: const Color(0xFF713B62)),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title,
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
                         style: const TextStyle(
-                            fontWeight: FontWeight.w700, fontSize: 15)),
-                    const SizedBox(height: 4),
-                    Text(subtitle,
+                          color: _ink,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 15,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
                         style: const TextStyle(
-                            color: Color(0xFF716770),
-                            height: 1.35,
-                            fontSize: 12)),
-                  ],
+                          color: _mutedInk,
+                          height: 1.4,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const Icon(Icons.chevron_right_rounded, color: Color(0xFF8C7A87)),
-            ],
+                const SizedBox(width: 8),
+                Icon(Icons.arrow_forward_rounded,
+                    color: iconColor.withValues(alpha: 0.8), size: 20),
+              ],
+            ),
           ),
         ),
       ),
@@ -263,19 +492,31 @@ class _TipRow extends StatelessWidget {
             width: 25,
             height: 25,
             alignment: Alignment.center,
-            decoration: const BoxDecoration(
-                color: Color(0xFFF2E5EF), shape: BoxShape.circle),
-            child: Text(number,
-                style: const TextStyle(
-                    color: Color(0xFF713B62), fontWeight: FontWeight.w700)),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(colors: [_coral, _rose]),
+              borderRadius: BorderRadius.circular(9),
+            ),
+            child: Text(
+              number,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
+                fontSize: 12,
+              ),
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(top: 3),
-              child: Text(text,
-                  style:
-                      const TextStyle(color: Color(0xFF514950), height: 1.4)),
+              child: Text(
+                text,
+                style: const TextStyle(
+                  color: Color(0xFF655A62),
+                  height: 1.4,
+                  fontSize: 13,
+                ),
+              ),
             ),
           ),
         ],
@@ -330,7 +571,22 @@ class _ComplaintPageState extends State<ComplaintPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Buat pengaduan')),
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF7E9F1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.edit_note_rounded, color: _plum),
+            ),
+            const SizedBox(width: 11),
+            const Text('Buat pengaduan'),
+          ],
+        ),
+      ),
       body: SafeArea(
         child: Form(
           key: _formKey,
@@ -340,26 +596,75 @@ class _ComplaintPageState extends State<ComplaintPage> {
               Container(
                 padding: const EdgeInsets.all(15),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFF3DF),
+                  color: const Color(0xFFFFF4E8),
                   borderRadius: BorderRadius.circular(15),
+                  border: Border.all(color: const Color(0xFFF6E0C8)),
                 ),
                 child: const Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.info_outline, color: Color(0xFF865C1C)),
+                    Icon(Icons.info_outline_rounded, color: _coral),
                     SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         'Formulir ini belum terhubung ke admin dinas. Data yang diisi hanya '
                         'berada sementara di layar ini, tidak dikirim atau disimpan. '
                         'Jangan gunakan data pribadi nyata sampai layanan resmi tersedia.',
-                        style: TextStyle(height: 1.45, fontSize: 13),
+                        style: TextStyle(
+                          color: Color(0xFF755746),
+                          height: 1.45,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 23),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFF9EAF1), Color(0xFFF1EBF7)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFF0DCE7)),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.edit_note_rounded, color: _plum, size: 26),
+                    SizedBox(width: 11),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'FORMULIR PENGADUAN',
+                            style: TextStyle(
+                              color: _plum,
+                              fontSize: 10,
+                              letterSpacing: 1.1,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Isi bagian yang tersedia sesuai kenyamananmu.',
+                            style: TextStyle(
+                              color: _ink,
+                              fontSize: 13,
+                              height: 1.35,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
               _sectionTitle('Data pelapor'),
               const SizedBox(height: 10),
               TextFormField(
@@ -601,6 +906,10 @@ class _ComplaintPageState extends State<ComplaintPage> {
               const SizedBox(height: 12),
               CheckboxListTile(
                 contentPadding: EdgeInsets.zero,
+                tileColor: const Color(0xFFF8EEF3),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
                 controlAffinity: ListTileControlAffinity.leading,
                 value: _safeToContact,
                 onChanged: (value) =>
@@ -612,6 +921,10 @@ class _ComplaintPageState extends State<ComplaintPage> {
               ),
               CheckboxListTile(
                 contentPadding: EdgeInsets.zero,
+                tileColor: const Color(0xFFEAF5F2),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
                 controlAffinity: ListTileControlAffinity.leading,
                 value: _privacyConsent,
                 onChanged: (value) =>
@@ -631,7 +944,14 @@ class _ComplaintPageState extends State<ComplaintPage> {
                       borderRadius: BorderRadius.circular(15)),
                 ),
                 onPressed: _submit,
-                child: const Text('Lihat ringkasan demo'),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Lihat ringkasan demo'),
+                    SizedBox(width: 9),
+                    Icon(Icons.arrow_forward_rounded, size: 19),
+                  ],
+                ),
               ),
             ],
           ),
@@ -682,8 +1002,69 @@ class _ComplaintPageState extends State<ComplaintPage> {
   }
 
   Widget _sectionTitle(String title) {
-    return Text(title,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700));
+    final (icon, accent, tint) = switch (title) {
+      'Data pelapor' => (
+          Icons.person_rounded,
+          _plum,
+          const Color(0xFFF7EAF2),
+        ),
+      'Data korban' => (
+          Icons.favorite_rounded,
+          _rose,
+          const Color(0xFFFFEEF1),
+        ),
+      'Data pelaku' => (
+          Icons.shield_outlined,
+          _teal,
+          const Color(0xFFEAF5F2),
+        ),
+      'Informasi kejadian' => (
+          Icons.event_note_rounded,
+          _coral,
+          const Color(0xFFFFF1E8),
+        ),
+      _ => (
+          Icons.auto_stories_rounded,
+          _plum,
+          const Color(0xFFF2EDF7),
+        ),
+    };
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 11),
+      decoration: BoxDecoration(
+        color: tint,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 35,
+            height: 35,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.78),
+              borderRadius: BorderRadius.circular(11),
+            ),
+            child: Icon(icon, color: accent, size: 20),
+          ),
+          const SizedBox(width: 11),
+          Text(
+            title,
+            style: const TextStyle(
+              color: _ink,
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const Spacer(),
+          Icon(Icons.circle, size: 7, color: accent.withValues(alpha: 0.65)),
+          const SizedBox(width: 5),
+          Icon(Icons.circle, size: 7, color: accent.withValues(alpha: 0.38)),
+          const SizedBox(width: 5),
+          Icon(Icons.circle, size: 7, color: accent.withValues(alpha: 0.2)),
+        ],
+      ),
+    );
   }
 }
 

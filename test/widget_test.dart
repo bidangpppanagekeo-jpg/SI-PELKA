@@ -7,6 +7,7 @@ void main() {
     await tester.pumpWidget(const SiperempuanAnakApp());
 
     expect(find.text('Kamu tidak sendiri.'), findsOneWidget);
+    expect(find.text('RUANG UNTUK BERCERITA'), findsOneWidget);
     await tester.tap(find.text('Buat pengaduan'));
     await tester.pumpAndSettle();
 
@@ -24,11 +25,12 @@ void main() {
     }
 
     expect(find.text('Data pelapor'), findsOneWidget);
+    await expectVisible(find.text('FORMULIR PENGADUAN'));
     expect(find.text('Nama pelapor (wajib)'), findsOneWidget);
     expect(find.text('Hubungan dengan korban (wajib)'), findsOneWidget);
     expect(find.text('Nomor kontak pelapor (wajib)'), findsOneWidget);
-    expect(find.text('Data korban'), findsOneWidget);
-    expect(find.text('Nama korban (wajib)'), findsOneWidget);
+    await expectVisible(find.text('Data korban'));
+    await expectVisible(find.text('Nama korban (wajib)'));
     await expectVisible(find.text('Alamat korban (wajib)'));
     await expectVisible(find.text('Kabupaten (wajib)'));
     await expectVisible(find.text('Kecamatan (wajib)'));
