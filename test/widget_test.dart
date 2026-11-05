@@ -24,15 +24,15 @@ void main() {
     }
 
     expect(find.text('Data pelapor'), findsOneWidget);
-    expect(find.text('Nama pelapor'), findsOneWidget);
-    expect(find.text('Hubungan dengan korban'), findsOneWidget);
-    expect(find.text('Nomor kontak pelapor'), findsOneWidget);
+    expect(find.text('Nama pelapor (wajib)'), findsOneWidget);
+    expect(find.text('Hubungan dengan korban (wajib)'), findsOneWidget);
+    expect(find.text('Nomor kontak pelapor (wajib)'), findsOneWidget);
     expect(find.text('Data korban'), findsOneWidget);
-    expect(find.text('Nama korban (opsional)'), findsOneWidget);
-    await expectVisible(find.text('Alamat korban (opsional)'));
-    await expectVisible(find.text('Kabupaten'));
-    await expectVisible(find.text('Kecamatan'));
-    await expectVisible(find.text('Desa/kelurahan'));
+    expect(find.text('Nama korban (wajib)'), findsOneWidget);
+    await expectVisible(find.text('Alamat korban (wajib)'));
+    await expectVisible(find.text('Kabupaten (wajib)'));
+    await expectVisible(find.text('Kecamatan (wajib)'));
+    await expectVisible(find.text('Desa/kelurahan (wajib)'));
     await expectVisible(find.text('Data pelaku'));
     await expectVisible(find.text('Status nama pelaku'));
     final nameStatus = find.byKey(const ValueKey('perpetrator-name-status'));

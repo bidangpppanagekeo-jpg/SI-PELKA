@@ -366,7 +366,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                 controller: _reporterNameController,
                 textCapitalization: TextCapitalization.words,
                 decoration: const InputDecoration(
-                  labelText: 'Nama pelapor',
+                  labelText: 'Nama pelapor (wajib)',
                   hintText: 'Nama yang dapat digunakan admin untuk menyapa',
                 ),
                 validator: _requiredValidator('Masukkan nama pelapor.'),
@@ -375,7 +375,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
               DropdownButtonFormField<String>(
                 initialValue: _reporterRelationship,
                 decoration: const InputDecoration(
-                  labelText: 'Hubungan dengan korban',
+                  labelText: 'Hubungan dengan korban (wajib)',
                   hintText: 'Pilih hubungan',
                 ),
                 items: const [
@@ -396,13 +396,16 @@ class _ComplaintPageState extends State<ComplaintPage> {
                 controller: _reporterPhoneController,
                 keyboardType: TextInputType.phone,
                 decoration: const InputDecoration(
-                  labelText: 'Nomor kontak pelapor',
+                  labelText: 'Nomor kontak pelapor (wajib)',
                   hintText: 'Contoh: 08xxxxxxxxxx',
                   helperText: 'Gunakan nomor yang aman untuk dihubungi.',
                 ),
                 validator: (value) {
                   final digits =
                       (value ?? '').replaceAll(RegExp(r'[^0-9]'), '');
+                  if (digits.isEmpty) {
+                    return 'Masukkan nomor kontak pelapor.';
+                  }
                   if (digits.length < 9 || digits.length > 15) {
                     return 'Masukkan nomor kontak yang valid.';
                   }
@@ -416,24 +419,23 @@ class _ComplaintPageState extends State<ComplaintPage> {
                 controller: _victimNameController,
                 textCapitalization: TextCapitalization.words,
                 decoration: const InputDecoration(
-                  labelText: 'Nama korban (opsional)',
-                  helperText:
-                      'Kosongkan jika belum aman atau belum mengetahui nama.',
+                  labelText: 'Nama korban (wajib)',
                 ),
+                validator: _requiredValidator('Masukkan nama korban.'),
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _victimAgeController,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
-                  labelText: 'Usia korban (opsional)',
+                  labelText: 'Usia korban (wajib)',
                   hintText: 'Perkiraan usia dalam tahun',
                 ),
-                validator: _ageValidator,
+                validator: _requiredAgeValidator,
               ),
               const SizedBox(height: 12),
               const Text(
-                'Alamat korban (opsional)',
+                'Alamat korban (wajib)',
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
@@ -441,26 +443,30 @@ class _ComplaintPageState extends State<ComplaintPage> {
                 controller: _victimDistrictController,
                 textCapitalization: TextCapitalization.words,
                 decoration: const InputDecoration(
-                  labelText: 'Kabupaten',
+                  labelText: 'Kabupaten (wajib)',
                   helperText:
                       'Isi lokasi secara umum jika aman untuk dibagikan.',
                 ),
+                validator: _requiredValidator('Masukkan kabupaten korban.'),
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _victimSubdistrictController,
                 textCapitalization: TextCapitalization.words,
                 decoration: const InputDecoration(
-                  labelText: 'Kecamatan',
+                  labelText: 'Kecamatan (wajib)',
                 ),
+                validator: _requiredValidator('Masukkan kecamatan korban.'),
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _victimVillageController,
                 textCapitalization: TextCapitalization.words,
                 decoration: const InputDecoration(
-                  labelText: 'Desa/kelurahan',
+                  labelText: 'Desa/kelurahan (wajib)',
                 ),
+                validator:
+                    _requiredValidator('Masukkan desa/kelurahan korban.'),
               ),
               const SizedBox(height: 24),
               _sectionTitle('Data pelaku'),
@@ -666,6 +672,13 @@ class _ComplaintPageState extends State<ComplaintPage> {
       return 'Masukkan usia antara 0 sampai 120 tahun.';
     }
     return null;
+  }
+
+  String? _requiredAgeValidator(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Masukkan usia korban.';
+    }
+    return _ageValidator(value);
   }
 
   Widget _sectionTitle(String title) {
