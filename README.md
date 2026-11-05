@@ -37,7 +37,7 @@ Jangan masukkan token atau Account ID ke source code, dan jangan kirim API token
 ## Cakupan demo
 
 - Beranda dengan informasi keselamatan.
-- Formulir demo berisi nama dan nomor kontak pelapor, hubungan dengan korban, data korban opsional, kategori kejadian, dan cerita.
+- Formulir demo berisi data pelapor, korban (termasuk alamat kabupaten/kecamatan/desa atau kelurahan), pelaku, jenis kejadian, dan kronologi.
 - Persetujuan kontak balik dan keterangan bahwa data tidak terkirim.
 - Data formulir hanya berada sementara di memori selama alur berlangsung; aplikasi ini tidak mengirim atau menyimpan laporan.
 

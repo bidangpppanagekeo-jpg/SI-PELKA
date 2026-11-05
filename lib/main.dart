@@ -125,15 +125,15 @@ class HomePage extends StatelessWidget {
               title: 'Buat pengaduan',
               subtitle: 'Ceritakan kejadian dengan cara yang terasa aman.',
               onTap: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                    builder: (_) => const ComplaintPage()),
+                MaterialPageRoute<void>(builder: (_) => const ComplaintPage()),
               ),
             ),
             const SizedBox(height: 11),
             _ActionCard(
               icon: Icons.health_and_safety_outlined,
               title: 'Butuh bantuan segera?',
-              subtitle: 'Jika dalam bahaya, cari tempat aman dan hubungi bantuan.',
+              subtitle:
+                  'Jika dalam bahaya, cari tempat aman dan hubungi bantuan.',
               onTap: () => _showEmergency(context),
             ),
             const SizedBox(height: 25),
@@ -237,8 +237,7 @@ class _ActionCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded,
-                  color: Color(0xFF8C7A87)),
+              const Icon(Icons.chevron_right_rounded, color: Color(0xFF8C7A87)),
             ],
           ),
         ),
@@ -275,8 +274,8 @@ class _TipRow extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.only(top: 3),
               child: Text(text,
-                  style: const TextStyle(
-                      color: Color(0xFF514950), height: 1.4)),
+                  style:
+                      const TextStyle(color: Color(0xFF514950), height: 1.4)),
             ),
           ),
         ],
@@ -298,8 +297,15 @@ class _ComplaintPageState extends State<ComplaintPage> {
   final _reporterPhoneController = TextEditingController();
   final _victimNameController = TextEditingController();
   final _victimAgeController = TextEditingController();
-  final _districtController = TextEditingController();
+  final _victimDistrictController = TextEditingController();
+  final _victimSubdistrictController = TextEditingController();
+  final _victimVillageController = TextEditingController();
+  final _perpetratorNameController = TextEditingController();
+  final _perpetratorAgeController = TextEditingController();
+  final _perpetratorAddressController = TextEditingController();
   final _storyController = TextEditingController();
+  String _perpetratorNameStatus = 'Diketahui';
+  String? _perpetratorRelationship;
   String? _incidentType;
   String? _reporterRelationship;
   bool _safeToContact = false;
@@ -311,7 +317,12 @@ class _ComplaintPageState extends State<ComplaintPage> {
     _reporterPhoneController.dispose();
     _victimNameController.dispose();
     _victimAgeController.dispose();
-    _districtController.dispose();
+    _victimDistrictController.dispose();
+    _victimSubdistrictController.dispose();
+    _victimVillageController.dispose();
+    _perpetratorNameController.dispose();
+    _perpetratorAgeController.dispose();
+    _perpetratorAddressController.dispose();
     _storyController.dispose();
     super.dispose();
   }
@@ -371,7 +382,8 @@ class _ComplaintPageState extends State<ComplaintPage> {
                   DropdownMenuItem(value: 'Korban', child: Text('Saya korban')),
                   DropdownMenuItem(value: 'Keluarga', child: Text('Keluarga')),
                   DropdownMenuItem(value: 'Saksi', child: Text('Saksi')),
-                  DropdownMenuItem(value: 'Pendamping', child: Text('Pendamping')),
+                  DropdownMenuItem(
+                      value: 'Pendamping', child: Text('Pendamping')),
                   DropdownMenuItem(value: 'Lainnya', child: Text('Lainnya')),
                 ],
                 onChanged: (value) =>
@@ -417,25 +429,123 @@ class _ComplaintPageState extends State<ComplaintPage> {
                   labelText: 'Usia korban (opsional)',
                   hintText: 'Perkiraan usia dalam tahun',
                 ),
-                validator: (value) {
-                  final text = value?.trim() ?? '';
-                  if (text.isEmpty) return null;
-                  final age = int.tryParse(text);
-                  if (age == null || age < 0 || age > 120) {
-                    return 'Masukkan usia antara 0 sampai 120 tahun.';
-                  }
-                  return null;
-                },
+                validator: _ageValidator,
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Alamat korban (opsional)',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _victimDistrictController,
+                textCapitalization: TextCapitalization.words,
+                decoration: const InputDecoration(
+                  labelText: 'Kabupaten',
+                  helperText:
+                      'Isi lokasi secara umum jika aman untuk dibagikan.',
+                ),
               ),
               const SizedBox(height: 12),
               TextFormField(
-                controller: _districtController,
+                controller: _victimSubdistrictController,
                 textCapitalization: TextCapitalization.words,
                 decoration: const InputDecoration(
-                  labelText: 'Kabupaten/kecamatan kejadian (opsional)',
-                  helperText:
-                      'Jangan tulis alamat rumah lengkap atau lokasi yang membahayakan.',
+                  labelText: 'Kecamatan',
                 ),
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _victimVillageController,
+                textCapitalization: TextCapitalization.words,
+                decoration: const InputDecoration(
+                  labelText: 'Desa/kelurahan',
+                ),
+              ),
+              const SizedBox(height: 24),
+              _sectionTitle('Data pelaku'),
+              const SizedBox(height: 10),
+              DropdownButtonFormField<String>(
+                key: const ValueKey('perpetrator-name-status'),
+                initialValue: _perpetratorNameStatus,
+                decoration: const InputDecoration(
+                  labelText: 'Status nama pelaku',
+                ),
+                items: const [
+                  DropdownMenuItem(
+                    value: 'Diketahui',
+                    child: Text('Diketahui'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'Tidak diketahui',
+                    child: Text('Tidak diketahui'),
+                  ),
+                ],
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      _perpetratorNameStatus = value;
+                      if (value == 'Tidak diketahui') {
+                        _perpetratorNameController.clear();
+                      }
+                    });
+                  }
+                },
+              ),
+              if (_perpetratorNameStatus == 'Diketahui') ...[
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _perpetratorNameController,
+                  textCapitalization: TextCapitalization.words,
+                  decoration: const InputDecoration(
+                    labelText: 'Nama pelaku (opsional)',
+                  ),
+                ),
+              ],
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _perpetratorAgeController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Usia pelaku (opsional)',
+                  hintText: 'Perkiraan usia dalam tahun',
+                ),
+                validator: _ageValidator,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _perpetratorAddressController,
+                textCapitalization: TextCapitalization.words,
+                decoration: const InputDecoration(
+                  labelText: 'Alamat pelaku (opsional)',
+                  helperText:
+                      'Isi hanya jika diketahui dan aman untuk dibagikan.',
+                ),
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                initialValue: _perpetratorRelationship,
+                decoration: const InputDecoration(
+                  labelText: 'Hubungan pelaku dengan korban (opsional)',
+                  hintText: 'Pilih hubungan jika diketahui',
+                ),
+                items: const [
+                  DropdownMenuItem(value: 'Keluarga', child: Text('Keluarga')),
+                  DropdownMenuItem(value: 'Pasangan', child: Text('Pasangan')),
+                  DropdownMenuItem(value: 'Teman', child: Text('Teman')),
+                  DropdownMenuItem(value: 'Tetangga', child: Text('Tetangga')),
+                  DropdownMenuItem(
+                    value: 'Rekan kerja',
+                    child: Text('Rekan kerja'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'Orang tidak dikenal',
+                    child: Text('Orang tidak dikenal'),
+                  ),
+                  DropdownMenuItem(value: 'Lainnya', child: Text('Lainnya')),
+                ],
+                onChanged: (value) =>
+                    setState(() => _perpetratorRelationship = value),
               ),
               const SizedBox(height: 24),
               _sectionTitle('Informasi kejadian'),
@@ -447,7 +557,8 @@ class _ComplaintPageState extends State<ComplaintPage> {
                   hintText: 'Pilih yang sesuai',
                 ),
                 items: const [
-                  DropdownMenuItem(value: 'Fisik', child: Text('Kekerasan fisik')),
+                  DropdownMenuItem(
+                      value: 'Fisik', child: Text('Kekerasan fisik')),
                   DropdownMenuItem(
                       value: 'Psikologis', child: Text('Kekerasan psikologis')),
                   DropdownMenuItem(
@@ -460,8 +571,10 @@ class _ComplaintPageState extends State<ComplaintPage> {
                 validator: (value) =>
                     value == null ? 'Pilih jenis kejadian.' : null,
               ),
-              const SizedBox(height: 20),
-              const Text('Ceritakan seperlunya',
+              const SizedBox(height: 24),
+              _sectionTitle('Kronologi kejadian'),
+              const SizedBox(height: 10),
+              const Text('Ceritakan seperlunya saja',
                   style: TextStyle(fontWeight: FontWeight.w700)),
               const SizedBox(height: 9),
               TextFormField(
@@ -545,6 +658,16 @@ class _ComplaintPageState extends State<ComplaintPage> {
     return (value) => value == null || value.trim().isEmpty ? message : null;
   }
 
+  String? _ageValidator(String? value) {
+    final text = value?.trim() ?? '';
+    if (text.isEmpty) return null;
+    final age = int.tryParse(text);
+    if (age == null || age < 0 || age > 120) {
+      return 'Masukkan usia antara 0 sampai 120 tahun.';
+    }
+    return null;
+  }
+
   Widget _sectionTitle(String title) {
     return Text(title,
         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700));
@@ -606,8 +729,8 @@ class ConfirmationPage extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(15)),
                 ),
-                onPressed: () => Navigator.of(context)
-                    .popUntil((route) => route.isFirst),
+                onPressed: () =>
+                    Navigator.of(context).popUntil((route) => route.isFirst),
                 child: const Text('Kembali ke beranda'),
               ),
             ],
